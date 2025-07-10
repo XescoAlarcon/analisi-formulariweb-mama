@@ -62,6 +62,9 @@ def mostrar_asuntos_por_ano(anyo):
     total_cip_incorrectos = 0
     distribucion_cambio_centro = {}
     distribucion_anular_motivo = {}  # Nueva estructura para anulación
+    filas_cambios = []
+    filas_anulaciones = []
+
 
     patron_cip = re.compile(r"^CIP:[A-Za-z]{4}1\d{4,}$")
 
@@ -71,6 +74,7 @@ def mostrar_asuntos_por_ano(anyo):
             centro = ""
             edad = None
             motivo = ""
+                   
             if hasattr(item, "Body"):
                 lineas = item.Body.splitlines()
                 if len(lineas) >= 3:
@@ -119,7 +123,23 @@ def mostrar_asuntos_por_ano(anyo):
                     edad = None
             else:
                 total_cip_incorrectos += 1
-
+                
+            # Recopilar datos individuales
+            if item.Subject.endswith("canvi de visita") or item.Subject.endswith("cambio de visita"):
+                filas_cambios.append({
+                    "Asunto": item.Subject,
+                    "CIP": cip,
+                    "Centro": centro,
+                    "Edad": edad
+                })
+            elif item.Subject.endswith("anul·lar visita") or item.Subject.endswith("anular visita"):
+                filas_anulaciones.append({
+                    "Asunto": item.Subject,
+                    "CIP": cip,
+                    "Motivo": motivo,
+                    "Edad": edad
+                })  
+                
             # Agrupar y contar
             if item.Subject.endswith("canvi de visita") or item.Subject.endswith("cambio de visita"):
                 total_cambio += 1
@@ -188,75 +208,7 @@ def mostrar_asuntos_por_ano(anyo):
     # Preguntar si se quiere exportar a Excel
     exportar = input("¿Quieres exportar los datos a Excel? (s/n): ").strip().lower()
     if exportar == "s":
-        filas_cambios = []
-        filas_anulaciones = []
-        # Recopilar datos individuales
-        for item in carpeta_base.Items:
-            if hasattr(item, "Subject") and item.Subject in asuntos_validos:
-                cip = ""
-                centro = ""
-                edad = None
-                motivo = ""
-                if hasattr(item, "Body"):
-                    lineas = item.Body.splitlines()
-                    if len(lineas) >= 3:
-                        cip = lineas[2].replace(" ","")
-                    if item.Subject.endswith("canvi de visita") or item.Subject.endswith("cambio de visita"):
-                        for linea in lineas:
-                            if linea.startswith("Centro Sanitario: "):
-                                centro = linea[len("Centro Sanitario: "):].strip()
-                                break
-                            elif linea.startswith("Centre Sanitari: "):
-                                centro = linea[len("Centre Sanitari: "):].strip()
-                                break
-                    elif item.Subject.endswith("anul·lar visita") or item.Subject.endswith("anular visita"):
-                        for linea in lineas:
-                            if linea.startswith("Motiu de l'anul·lació: "):
-                                motivo = linea[len("Motiu de l'anul·lació: "):].strip()
-                                break
-                            elif linea.startswith("Motivo de la anulación: "):
-                                motivo = linea[len("Motivo de la anulación: "):].strip()
-                                break
-                        # Sintetizar motivo
-                        if motivo.startswith("Em faig regularment") or motivo.startswith("Me hago regularmente"):
-                            motivo = "MX EXT"
-                        elif motivo.startswith("Solament vull anul·lar") or motivo.startswith("Solo quiero anular"):
-                            motivo = "MX < 6"
-                        elif motivo.startswith("Ja he tingut") or motivo.startswith("Ya he tenido"):
-                            motivo = "CA MAMA"
-                        elif motivo.startswith("Tinc una altra") or motivo.startswith("Tengo otra"):
-                            motivo = "MALALTIA BENIGNA"
-                        elif motivo.startswith("Vaig ser estudiada") or motivo.startswith("Fui estudiada"):
-                            motivo = "UCG"
-                        elif motivo.startswith("De moment no") or motivo.startswith("De momento no"):
-                            motivo = "NO INTERÈS"
-                        elif motivo.startswith("Altres motius") or motivo.startswith("Otros motivos"):
-                            motivo = "ALTRES"
-                        else: 
-                            motivo = "** " + motivo + " **"
-                # Validar el CIP y calcular edad si es correcto
-                if patron_cip.match(cip):
-                    try:
-                        anyo_nacimiento = int("19" + cip[9:11])
-                        edad = datetime.now().year - anyo_nacimiento
-                    except Exception:
-                        edad = None
-                else:
-                    edad = None
-                if item.Subject.endswith("canvi de visita") or item.Subject.endswith("cambio de visita"):
-                    filas_cambios.append({
-                        "Asunto": item.Subject,
-                        "CIP": cip,
-                        "Centro": centro,
-                        "Edad": edad
-                    })
-                elif item.Subject.endswith("anul·lar visita") or item.Subject.endswith("anular visita"):
-                    filas_anulaciones.append({
-                        "Asunto": item.Subject,
-                        "CIP": cip,
-                        "Motivo": motivo,
-                        "Edad": edad
-                    })
+
         # Crear DataFrames de las distribuciones
         df_cambios_dist = pd.DataFrame([
             {"Centro": centro, "Rango edad": rango, "Cantidad": cantidad}
