@@ -240,7 +240,7 @@ def mostrar_asuntos_por_ano(anyo):
 
         df_anulaciones_dist = pd.DataFrame([
             {"Motivo": motivo, "Rango edad": rango, "Cantidad": cantidad}
-            # for motivo, rangos in distribucion_anular_motivo.items()
+            for motivo, rangos in distribucion_anular_motivo.items()
             for rango, cantidad in rangos.items()
         ])
         # Añadir totales por motivo
