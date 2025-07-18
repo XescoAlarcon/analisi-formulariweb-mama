@@ -74,6 +74,7 @@ def mostrar_asuntos_por_ano(anyo):
             centro = ""
             edad = None
             motivo = ""
+            otros_motivos = ""
                    
             if hasattr(item, "Body"):
                 lineas = item.Body.splitlines()
@@ -90,14 +91,23 @@ def mostrar_asuntos_por_ano(anyo):
                             break
                 # Buscar motivo anulacion solo si es "anul·lar/anular visita"
                 elif item.Subject.endswith("anul·lar visita") or item.Subject.endswith("anular visita"):
-                    for linea in lineas:
-                        if linea.startswith("Motiu de l'anul·lació: "):
-                            motivo = linea[len("Motiu de l'anul·lació: "):].strip()
-                            break
-                        elif linea.startswith("Motivo de la anulación: "):
-                            motivo = linea[len("Motivo de la anulación: "):].strip()
-                            break
-                                     # Sintetizar motivo
+                    nlineas = len(lineas)
+                    for i in range(nlineas):
+                        if lineas[i].startswith("Motiu de l'anul·lació: "):
+                            motivo = lineas[i][len("Motiu de l'anul·lació: "):].strip()
+                        elif lineas[i].startswith("Motivo de la anulación: "):
+                            motivo = lineas[i][len("Motivo de la anulación: "):].strip()
+                        elif lineas[i].startswith("Otras aclaraciones o dudas sobre la anulación: "):
+                            otros_motivos = lineas[i][len("Otras aclaraciones o dudas sobre la anulación: "):].strip()
+                            while i + 1 < nlineas:
+                                otros_motivos += " " + lineas[i+1]
+                                i+=1
+                        elif lineas[i].startswith("Altres aclaracions o dubtes sobre l'anul·lació: "):
+                            otros_motivos = lineas[i][len("Altres aclaracions o dubtes sobre l'anul·lació: "):].strip()                                                    
+                            while i+1 < nlineas:
+                                otros_motivos += " " + lineas[i+1]
+                                i+=1
+                    # Sintetizar motivo
                     if motivo.startswith("Em faig regularment") or motivo.startswith("Me hago regularmente"):
                         motivo = "MX EXT"
                     elif motivo.startswith("Solament vull anul·lar") or motivo.startswith("Solo quiero anular"):
@@ -137,7 +147,8 @@ def mostrar_asuntos_por_ano(anyo):
                     "Asunto": item.Subject,
                     "CIP": cip,
                     "Motivo": motivo,
-                    "Edad": edad
+                    "Edad": edad,
+                    "Otros Motivos": otros_motivos
                 })  
                 
             # Agrupar y contar
@@ -229,7 +240,7 @@ def mostrar_asuntos_por_ano(anyo):
 
         df_anulaciones_dist = pd.DataFrame([
             {"Motivo": motivo, "Rango edad": rango, "Cantidad": cantidad}
-            for motivo, rangos in distribucion_anular_motivo.items()
+            # for motivo, rangos in distribucion_anular_motivo.items()
             for rango, cantidad in rangos.items()
         ])
         # Añadir totales por motivo
