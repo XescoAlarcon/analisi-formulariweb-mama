@@ -2,15 +2,15 @@
 
 ## Introducció
 
-Aquest projecte analitza un .pst per trovar tots els mails inclosos en una carpeta específica que inclouen totes les respostes que s'han anat generant al formulari web de Còlon https://icoprevencio.cat/mama/ al llarg dels anys. Amb això genera una distribució de les dades trovades.
+Aquest projecte analitza un .pst per trovar tots els mails inclosos en una carpeta específica que inclouen totes les respostes que s'han anat generant al formulari web de Mama https://icoprevencio.cat/mama/ al llarg dels anys. Amb això genera una distribució de les dades trovades.
 
 Per executar aquest programari es presuposen uns coneixements mínims de la terminal de Windows.
 
 ## Passos previs
 
-En aquest repositori públic no està inclòs el .pst ja que té informació sensible. L'usuari que executi el programa analisi.py s'haura de generar un .pst de la carpeta FORMULARI WEB de la bùstia compartida ICO Prevenció COLON. Això es fa amb l'exportació inclosa a l'Outlook 365 per escriptori.
+En aquest repositori públic no està inclòs el .pst ja que té informació sensible. L'usuari que executi el programa analisi.py s'haura de generar un .pst de la carpeta FORMULARI WEB de la bùstia compartida ICO Prevenció MAMA. Això es fa amb l'exportació inclosa a l'Outlook 365 per escriptori.
 
-Aquest fitxer s'haura de nomenar **colon.pst** i estar a l'arrel d'on està el programa **analisi.py**
+Aquest fitxer s'haura de nomenar **mama.pst** i estar a l'arrel d'on està el programa **analisi.py**
 
 ## Requisitis
 
