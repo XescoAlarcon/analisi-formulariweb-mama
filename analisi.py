@@ -188,19 +188,23 @@ def mostrar_asuntos_por_ano(anyo):
     
     print("Distribución por centro sanitario y rango de edad para 'canvi/cambio de visita':")
     for centro, rangos in distribucion_cambio_centro.items():
+        total_centro = sum(rangos.values())
         print(f"  {centro}:")
         for rango, cantidad in rangos.items():
             print(f"    {rango}: {cantidad}")
+        print(f"    Total: {total_centro}")
     print(f"\n-----------------------------------------------")            
     print(f"Total 'anul·lar visita' o 'anular visita': {total_anular}")
     print(f"-----------------------------------------------\n")
-    
+
     print("Distribución por motivo y rango de edad para 'anul·lar/anular visita':")
     for motivo, rangos in distribucion_anular_motivo.items():
+        total_motivo = sum(rangos.values())
         print(f"  {motivo}:")
         for rango, cantidad in rangos.items():
             print(f"    {rango}: {cantidad}")
-            
+        print(f"    Total: {total_motivo}")
+
     print(f"\n============================")            
     print(f"Total CIPs incorrectos: {total_cip_incorrectos}")
     print(f"============================\n")            
@@ -215,11 +219,27 @@ def mostrar_asuntos_por_ano(anyo):
             for centro, rangos in distribucion_cambio_centro.items()
             for rango, cantidad in rangos.items()
         ])
+        # Añadir totales por centro
+        for centro, rangos in distribucion_cambio_centro.items():
+            total = sum(rangos.values())
+            df_cambios_dist = pd.concat([
+                df_cambios_dist,
+                pd.DataFrame([{"Centro": centro, "Rango edad": "Total", "Cantidad": total}])
+            ], ignore_index=True)
+
         df_anulaciones_dist = pd.DataFrame([
             {"Motivo": motivo, "Rango edad": rango, "Cantidad": cantidad}
             for motivo, rangos in distribucion_anular_motivo.items()
             for rango, cantidad in rangos.items()
         ])
+        # Añadir totales por motivo
+        for motivo, rangos in distribucion_anular_motivo.items():
+            total = sum(rangos.values())
+            df_anulaciones_dist = pd.concat([
+                df_anulaciones_dist,
+                pd.DataFrame([{"Motivo": motivo, "Rango edad": "Total", "Cantidad": total}])
+            ], ignore_index=True)
+
         nombre_fichero = f"datos_{anyo}.xlsx"
         with pd.ExcelWriter(nombre_fichero, engine="xlsxwriter") as writer:
             pd.DataFrame(filas_cambios).to_excel(writer, sheet_name="Cambios de visita", index=False)
