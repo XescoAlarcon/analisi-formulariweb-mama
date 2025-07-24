@@ -50,10 +50,12 @@ def mostrar_asuntos_por_ano(anyo):
         return
 
     asuntos_validos = {
-        "Formulario mamografia, canvi de visita",
+        "Formulari mamografia, canvi de visita",
         "Formulario mamografía, cambio de visita",
-        "Formulario mamografia, anul·lar visita",
-        "Formulario mamografía, anular visita"
+        "Formulari mamografia, anul·lar visita",
+        "Formulario mamografía, anular visita",
+        "Formulario mamografia, anul·lar visita", # Agregamos estas dos líneas por errores ortográficos en el 2017, 2018 y puede que más años
+        "Formulario mamografia, canvi de visita"
     }
     print(f"Asunto y CIP filtrados en el año {anyo}:")
 
@@ -138,14 +140,14 @@ def mostrar_asuntos_por_ano(anyo):
             if item.Subject.endswith("canvi de visita") or item.Subject.endswith("cambio de visita"):
                 filas_cambios.append({
                     "Asunto": item.Subject,
-                    "CIP": cip,
+                    # "CIP": cip, # No guardamos el CIP por temas de LOPD
                     "Centro": centro,
                     "Edad": edad
                 })
             elif item.Subject.endswith("anul·lar visita") or item.Subject.endswith("anular visita"):
                 filas_anulaciones.append({
                     "Asunto": item.Subject,
-                    "CIP": cip,
+                    # "CIP": cip, # No guardamos el CIP por temas de LOPD
                     "Motivo": motivo,
                     "Edad": edad,
                     "Otros Motivos": otros_motivos
