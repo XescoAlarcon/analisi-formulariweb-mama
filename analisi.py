@@ -55,7 +55,9 @@ def mostrar_asuntos_por_ano(anyo):
         "Formulari mamografia, anul·lar visita",
         "Formulario mamografía, anular visita",
         "Formulario mamografia, anul·lar visita", # Agregamos estas dos líneas por errores ortográficos en el 2017, 2018 y puede que más años
-        "Formulario mamografia, canvi de visita"
+        "Formulario mamografia, canvi de visita",
+        "Formulario mamografía, solicitud de visita", # Agregamos estas dos líneas porque en el año 2021 y en el 2022 se modificó el asunto por motivos que desconocemos
+        "Formulari mamografia, sol·licitud de visita"        
     }
     print(f"Asunto y CIP filtrados en el año {anyo}:")
 
@@ -83,7 +85,7 @@ def mostrar_asuntos_por_ano(anyo):
                 if len(lineas) >= 3:
                     cip = lineas[2].replace(" ","")
                 # Buscar centro solo si es "canvi/cambio de visita"
-                if item.Subject.endswith("canvi de visita") or item.Subject.endswith("cambio de visita"):
+                if item.Subject.endswith("canvi de visita") or item.Subject.endswith("cambio de visita") or item.Subject.endswith("solicitud de visita") or item.Subject.endswith("sol·licitud de visita"):
                     for linea in lineas:
                         if linea.startswith("Centro Sanitario: "):
                             centro = linea[len("Centro Sanitario: "):].strip()
@@ -137,7 +139,7 @@ def mostrar_asuntos_por_ano(anyo):
                 total_cip_incorrectos += 1
                 
             # Recopilar datos individuales
-            if item.Subject.endswith("canvi de visita") or item.Subject.endswith("cambio de visita"):
+            if item.Subject.endswith("canvi de visita") or item.Subject.endswith("cambio de visita") or item.Subject.endswith("sol·licitud de visita") or item.Subject.endswith("solicitud de visita"):
                 filas_cambios.append({
                     "Asunto": item.Subject,
                     # "CIP": cip, # No guardamos el CIP por temas de LOPD
@@ -154,7 +156,7 @@ def mostrar_asuntos_por_ano(anyo):
                 })  
                 
             # Agrupar y contar
-            if item.Subject.endswith("canvi de visita") or item.Subject.endswith("cambio de visita"):
+            if item.Subject.endswith("canvi de visita") or item.Subject.endswith("cambio de visita") or item.Subject.endswith("sol·licitud de visita") or item.Subject.endswith("solicitud de visita"):
                 total_cambio += 1
                 if centro and edad is not None:
                     # Clasificar por rango de edad
@@ -195,6 +197,7 @@ def mostrar_asuntos_por_ano(anyo):
                     if motivo not in distribucion_anular_motivo:
                         distribucion_anular_motivo[motivo] = {"[50-59]": 0, "[60-69]": 0, "[70-79]": 0, "missing": 0}
                     distribucion_anular_motivo[motivo][rango] += 1
+            
     print(f"\n--------------------------------------------------")
     print(f"Total 'canvi de visita' o 'cambio de visita': {total_cambio}")
     print(f"--------------------------------------------------\n")
